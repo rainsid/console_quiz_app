@@ -178,6 +178,14 @@ public class AppView {
         System.out.println("--------------------------------------------------------------");
     }
 
+    // ----------------------- Success and Fail message ------------------------
+    public void showSuccessMessage(String message){
+        System.out.println(message);
+    }
+
+    public void showFailMessage(String message){
+        System.out.println(message);
+    }
 
     // ----------- helper methods ----------------
     private String getStringInput(String prompt) {

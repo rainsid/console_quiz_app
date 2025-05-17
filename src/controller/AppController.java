@@ -116,7 +116,12 @@ public class AppController {
         if(user != null){
             user = view.showUpdateUser(user);
             System.out.println(user);
-//            boolean isUpdated = dbManager.updateUser(user);
+            boolean isUpdated = dbManager.updateUser(user);
+            if(isUpdated){
+                view.showSuccessMessage("Success! User has been updated!");
+            } else {
+                view.showFailMessage("Update failed!");
+            }
         }
     }
 

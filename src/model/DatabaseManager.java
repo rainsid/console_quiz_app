@@ -103,7 +103,7 @@ public class DatabaseManager {
                     sql = sql + "email = '" + identifier + "';";
                     break;
             }
-            System.out.println(sql);
+
             ResultSet res = stmt.executeQuery(sql);
 
             if(!res.next()){
@@ -146,6 +146,7 @@ public class DatabaseManager {
     // ------------------------------ update user --------------------------------------------
     public boolean updateUser(Map<String, String> user){
         try(Connection conn = DriverManager.getConnection(DB_URL);
+
             Statement stmt = conn.createStatement()) {
             String firstname = user.get("firstname");
             String lastname = user.get("lastname");
@@ -153,14 +154,15 @@ public class DatabaseManager {
             String username = user.get("username");
             String password = user.get("password");
 
-            String sql = "UPDATE users SET" + firstname + "','" + lastname + "','" + email + "','" + username + "','" + password + "');";
-            System.out.println(sql);
+            String sql = "UPDATE users SET firstname = '" + firstname + "', lastname = '" + lastname + "', email = '" + email + "', username = '" + username + "', password = '" + password + "' where username = '" + username + "';";
             int rowsAffected = stmt.executeUpdate(sql);
-            return true;
+            if (rowsAffected > 0)
+                return true;
         }catch (SQLException e) {
             System.out.println("Database initialization error: " + e.getMessage());
             return false;
         }
+        return false;
     }
 }
 
