@@ -99,6 +99,13 @@ public class AppView {
 
         return returnUser;
     }
+
+    public boolean showDeleteUser(Map<String, String> user){
+       showUser(user);
+       String yesNo = getStringInput("Are you sure you want to delete this user?\n(type 'yes' or 'no'): ");
+
+       return yesNo == "yes" ? true : false;
+    }
     // ----------------- show "user not added" ------------------
     public void showUserNotAdded() {
         System.out.println(tc.RED + tc.BLACK_BG + "Error: User not added" + tc.RESET);

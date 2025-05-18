@@ -2,6 +2,7 @@ package controller;
 
 import model.DatabaseManager;
 import view.AppView;
+import view.QuizAdminView;
 
 import java.sql.ResultSet;
 import java.util.HashMap;
@@ -11,9 +12,12 @@ import java.util.Scanner;
 public class AppController {
     private AppView view;
     private DatabaseManager dbManager;
+    private QuizAdminView quizAdminView;
+    private QuizController quizController;
 
-    public AppController(AppView view, DatabaseManager dbManager){
+    public AppController(AppView view, QuizController quizController, DatabaseManager dbManager){
         this.view = view;
+        this.quizController= quizController;
         this.dbManager = dbManager;
     }
 
@@ -52,6 +56,7 @@ public class AppController {
                     manageUsers();
                     break;
                 case 2:
+                    manageQuiz();
                     break;
                 default:
                     System.out.println("Invalid input");
@@ -74,7 +79,11 @@ public class AppController {
                 break;
             case 4:
                 updateUser();
-                break;       }
+                break;
+            case 5:
+                deleteUser();
+                break;
+        }
     }
     // --------- view single user -----------
     private Map<String, String> viewUser(){
@@ -115,7 +124,6 @@ public class AppController {
         Map<String, String> user = viewUser();
         if(user != null){
             user = view.showUpdateUser(user);
-            System.out.println(user);
             boolean isUpdated = dbManager.updateUser(user);
             if(isUpdated){
                 view.showSuccessMessage("Success! User has been updated!");
@@ -125,6 +133,24 @@ public class AppController {
         }
     }
 
+    private void deleteUser(){
+        Map<String, String> user = viewUser();
+        boolean isDeleted = false;
+
+        if(user != null){
+            if(view.showDeleteUser(user)){
+               isDeleted = dbManager.deleteUser(user.get("id"));
+            }
+            if(isDeleted){
+                view.showSuccessMessage("Success! User has been deleted!");
+            } else {
+                view.showFailMessage("Deletion failed!");
+            }
+        }
+
+    }
+
+    // ------------------------ view users ---------------------------
     private void viewUsers(){
          view.showAllUsers(dbManager.getAllUsers());
     }
@@ -139,6 +165,10 @@ public class AppController {
         }
     }
 
+    // -------------------- manage quiz ------------------------------------
+    public void manageQuiz(){
+        quizController.start();
+    }
     // helper methods
 
 }

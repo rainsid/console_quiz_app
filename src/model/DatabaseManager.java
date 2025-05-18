@@ -109,6 +109,8 @@ public class DatabaseManager {
             if(!res.next()){
                 return null;
             }
+
+            user.put("id" , res.getString("id"));
             user.put("firstname" , res.getString("firstname"));
             user.put("lastname" , res.getString("lastname"));
             user.put("email" , res.getString("email"));
@@ -155,6 +157,21 @@ public class DatabaseManager {
             String password = user.get("password");
 
             String sql = "UPDATE users SET firstname = '" + firstname + "', lastname = '" + lastname + "', email = '" + email + "', username = '" + username + "', password = '" + password + "' where username = '" + username + "';";
+            int rowsAffected = stmt.executeUpdate(sql);
+            if (rowsAffected > 0)
+                return true;
+        }catch (SQLException e) {
+            System.out.println("Database initialization error: " + e.getMessage());
+            return false;
+        }
+        return false;
+    }
+
+    // ------------------------------ delete user --------------------------------------
+    public boolean deleteUser(String id){
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement stmt = conn.createStatement()) {
+            String sql = "DELETE FROM users where id = '" + id + "';";
             int rowsAffected = stmt.executeUpdate(sql);
             if (rowsAffected > 0)
                 return true;
