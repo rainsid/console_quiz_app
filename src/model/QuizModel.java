@@ -2,10 +2,8 @@ package model;
 
 import Entities.Question;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.ArrayList;
 
 public class QuizModel {
     private static final String DB_URL = "jdbc:sqlite:database";
@@ -52,8 +50,133 @@ public class QuizModel {
             int rowsAffected = stmt.executeUpdate(sql);
             return rowsAffected;
         }catch (SQLException e) {
-            System.out.println("Database initialization error: " + e.getMessage());
+            System.out.println("error: " + e.getMessage());
         }
         return 0;
     }
+
+    // ---------------------------------- retrieve all questions -------------------------
+    public ArrayList<Question> retrieveAllQuestions(){
+        ArrayList<Question> allQuestions = new ArrayList<>();
+        try(Connection conn = DriverManager.getConnection(DB_URL);
+            Statement stmt = conn.createStatement()) {
+
+            String sql = "SELECT * FROM questions;";
+            ResultSet res =  stmt.executeQuery(sql);
+
+            while(res.next()){
+                Question question = new Question();
+                ArrayList<String> options = new ArrayList<>();
+                options.add(res.getString("option_a"));
+                options.add(res.getString("option_b"));
+                options.add(res.getString("option_c"));
+                options.add(res.getString("option_d"));
+
+                question.setQuestion(res.getString("question_text"));
+                question.setQuestionID(res.getInt("question_id"));
+                question.setChoices(options);
+                question.setCorrectAnswer(res.getString("correct_answer"));
+
+                allQuestions.add(question);
+            }
+
+        }catch(SQLException e){
+            System.out.println("error: " + e.getMessage());
+            return null;
+        }
+        return allQuestions;
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
