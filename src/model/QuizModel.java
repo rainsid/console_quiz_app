@@ -135,4 +135,38 @@ public class QuizModel {
 
     return true;
   }
+
+  //--------------------- update Question (refactored) ------------------
+  public boolean updateQuestion(Question q) {
+    String sql = "UPDATE questions SET question_text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_answer = ? WHERE question_id = ?";
+
+    try (Connection conn = DriverManager.getConnection(DB_URL);
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setString(1, q.getQuestion());
+      pstmt.setString(2, q.getOptionA());
+      pstmt.setString(3, q.getOptionB());
+      pstmt.setString(4, q.getOptionC());
+      pstmt.setString(5, q.getOptionD());
+      pstmt.setString(6, q.getCorrectAnswer());
+      pstmt.setString(7, Integer.toString(q.getQuestionID()));
+
+      int rowsAffected = pstmt.executeUpdate(sql);
+      return(rowsAffected > 0);
+
+    } catch (SQLException e) {
+      System.out.println("error: " + e.getMessage());
+      return false;
+    }
+  }
 }
+
+/*
+ * "question_id INTEGER PRIMARY KEY AUTOINCREMENT," +
+ * "question_text TEXT NOT NULL," +
+ * "option_a TEXT NOT NULL," +
+ * "option_b TEXT NOT NULL," +
+ * "option_c TEXT NOT NULL," +
+ * "option_d TEXT NOT NULL," +
+ * "correct_answer TEXT NOT NULL" +
+ * ")";
+ */
