@@ -7,6 +7,7 @@ import view.UserView;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class UserController {
 
@@ -16,9 +17,9 @@ public class UserController {
   private Question question;
 
   public UserController() throws SQLException {
-    }
+  }
 
-    // --------- handle user login ---------------
+  // --------- handle user login ---------------
   public void handleUserLogin() {
     String username = userView.enterUserUsername();
     if (username == null || username.trim().isEmpty()) {
@@ -31,8 +32,6 @@ public class UserController {
       return;
     }
     String storedPassword = dbManager.getUserPassword(username);
-    System.out.println("stored password: " + storedPassword);
-    System.out.println("input password: " + password);
     if (password.equals(storedPassword)) {
       userView.showSuccess("User login successful");
       userMenu();
@@ -42,23 +41,23 @@ public class UserController {
   }
 
   private void userMenu() {
-      while(true) {
-        int choice = userView.showUserMenu();
-        switch(choice){
-          case 1:
-            takeQuiz();
-            break;
-        }
+    while (true) {
+      int choice = userView.showUserMenu();
+      switch (choice) {
+        case 1:
+          takeQuiz();
+          break;
       }
+    }
   }
 
-  private void takeQuiz(){
-      ArrayList<Question> questions = quizModel.retrieveAllQuestions();
-      if(questions == null){
-        userView.showError("No questions stored in the database");
-        return;
-      }
-
+  private void takeQuiz() {
+    ArrayList<Question> questions = quizModel.retrieveAllQuestions();
+    if (questions == null) {
+      userView.showError("No questions stored in the database");
+      return;
+    }
+    Map<Integer, String> userAnswers = userView.showQuestions(questions);
   }
 
 }
