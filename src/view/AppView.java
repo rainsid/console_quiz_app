@@ -118,15 +118,15 @@ public class AppView {
   }
 
   // ------------- show all users -----------------
-  public void showAllUsers(List<Map<String, String>> users) {
+  public void showAllUsers(List<Map<String, String>> users, int numberOfQuestions) {
     for (Map<String, String> user : users) {
       System.out.println("First Name: " + user.get("firstname"));
       System.out.println("Last Name: " + user.get("lastname"));
       System.out.println("Email: " + user.get("email"));
       System.out.println("Username: " + user.get("username"));
-      String score = (user.get("quizScore").equals("-1")) ? "N/A" : user.get("quizScore");
+      String score = (user.get("quizScore").equals("-1")) ? "N/A" : user.get("quizScore") + "/" + numberOfQuestions;
       System.out.println("Score: " + score);
-      String quizDate = (user.get("quizDate") == null) ? "N/A" : user.get("quizScore");
+      String quizDate = (user.get("quizDate") == null) ? "N/A" : user.get("quizDate");
       System.out.println("Quiz Date Taken: " + quizDate);
       System.out.println("--------------------------------------------------------------");
     }
