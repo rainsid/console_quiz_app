@@ -4,13 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
-import ConsoleColor.TerminalColors;
+
 import helper.ConsoleUtil;
 import helper.Banner;
 
 public class AppView {
   private Scanner sc = new Scanner(System.in);
-  private TerminalColors tc;
 
   public int showMainMenu() {
     ConsoleUtil.clearConsole();
@@ -37,7 +36,7 @@ public class AppView {
     ConsoleUtil.clearConsole();
     System.out.println(Banner.MAIN_BANNER);
     System.out.println(Banner.ADMIN_MENU);
-    System.out.println("1. Manage Users");
+    System.out.println("1. Manage Trainee");
     System.out.println("2. Manage Quiz");
     System.out.println("3. Go back to Main Menu");
     return getIntInput("Enter choice: ");
@@ -48,11 +47,11 @@ public class AppView {
     ConsoleUtil.clearConsole();
     System.out.println(Banner.MAIN_BANNER);
     System.out.println(Banner.MANAGE_USER);
-    System.out.println("1. Add User");
-    System.out.println("2. View All Users");
-    System.out.println("3. View a User");
-    System.out.println("4. Update User");
-    System.out.println("5. Delete User");
+    System.out.println("1. Add Trainee");
+    System.out.println("2. View All Trainees");
+    System.out.println("3. View a Trainee");
+    System.out.println("4. Update Trainee");
+    System.out.println("5. Delete Trainee");
     System.out.println("6. Go back to Admin Menu");
     return getIntInput("Enter number of your choice");
   }
@@ -65,6 +64,9 @@ public class AppView {
 
   // ------------------- add a user ----------------------------
   public Map<String, String> showAddUser() {
+    ConsoleUtil.clearConsole();
+    System.out.println(Banner.MAIN_BANNER);
+    System.out.println(Banner.ADD_TRAINEE);
     Map<String, String> user = new HashMap<>();
     System.out.print("First Name: ");
     user.put("firstname", sc.nextLine());
@@ -82,9 +84,11 @@ public class AppView {
 
   // ------------------- update a user ----------------------------
   public Map<String, String> showUpdateUser(Map<String, String> user) {
+    ConsoleUtil.clearConsole();
+    System.out.println(Banner.MAIN_BANNER);
+    System.out.println(Banner.UPDATE_TRAINEE);
     Map<String, String> returnUser = new HashMap<>();
-    sc.nextLine();
-    System.out.println("\nEnter updated user details (leave blank to keep current):");
+    System.out.println("\nEnter updated trainee details (leave blank to keep current):");
     System.out.print("First Name (" + user.get("firstname") + "): ");
     String firstname = sc.nextLine();
     System.out.print("Last Name (" + user.get("lastname") + "): ");
@@ -99,27 +103,29 @@ public class AppView {
     returnUser.put("firstname", firstname.isEmpty() ? user.get("firstname") : firstname);
     returnUser.put("lastname", lastname.isEmpty() ? user.get("lastname") : lastname);
     returnUser.put("email", email.isEmpty() ? user.get("email") : email);
+    returnUser.put("oldUsername", user.get("username"));
     returnUser.put("username", username.isEmpty() ? user.get("username") : username);
     returnUser.put("password", password.isEmpty() ? user.get("password") : password);
 
     return returnUser;
   }
 
-  public boolean showDeleteUser(Map<String, String> user) {
-    showUser(user);
-    String yesNo = getStringInput("Are you sure you want to delete this user?\n(type 'yes' or 'no'): ");
+  public boolean showDeleteUser(Map<String, String> user, int numberOfQuestions) {
+    ConsoleUtil.clearConsole();
+    System.out.println(Banner.MAIN_BANNER);
+    System.out.println(Banner.DELETE_TRAINEE);
+    String yesNo = getStringInput("Are you sure you want to delete this trainee?\n(type 'yes' or 'no'): ");
 
-    return yesNo == "yes" ? true : false;
-  }
-
-  // ----------------- show "user not added" ------------------
-  public void showUserNotAdded() {
-    System.out.println(tc.RED + tc.BLACK_BG + "Error: User not added" + tc.RESET);
+    return yesNo.equals("yes");
   }
 
   // ------------- show all users -----------------
   public void showAllUsers(List<Map<String, String>> users, int numberOfQuestions) {
+    ConsoleUtil.clearConsole();
+    System.out.println(Banner.MAIN_BANNER);
+    System.out.println(Banner.SHOW_ALL_TRAINEES);
     for (Map<String, String> user : users) {
+      System.out.println("Trainee ID: " + user.get("id"));
       System.out.println("First Name: " + user.get("firstname"));
       System.out.println("Last Name: " + user.get("lastname"));
       System.out.println("Email: " + user.get("email"));
@@ -135,7 +141,10 @@ public class AppView {
 
   // ----------- search a single user ------------------------------
   public int showSearchBy() {
-    System.out.println("\nSearch User By:");
+    ConsoleUtil.clearConsole();
+    System.out.println(Banner.MAIN_BANNER);
+    System.out.println(Banner.SEARCH_BY);
+    System.out.println("\nSearch Trainee By:");
     System.out.println("1. ID");
     System.out.println("2. Username");
     System.out.println("3. Email");
@@ -145,13 +154,13 @@ public class AppView {
 
   // ----------------- search user by id --------------------------
   public int inputUserID() {
-    System.out.print("Enter user id: ");
+    System.out.print("Enter trainee id: ");
     return sc.nextInt();
   }
 
   // ----------------- search user by username--------------------------
   public String inputUsername() {
-    System.out.print("Enter username: ");
+    System.out.print("Enter trainee: ");
     return sc.nextLine();
   }
 
@@ -167,24 +176,35 @@ public class AppView {
 
   // ----------------- NO user found --------------------------
   public void showNoUserFound() {
-    System.out.println("No user found");
+    System.out.println("No trainee found");
   }
 
   // ----------------- Invalid Username/Email --------------------------
   public void showInvalidUsernameEmail() {
-    System.out.println(tc.RED + tc.BLACK_BG + "Invalid email or password" + tc.RESET);
+    System.out.println("Invalid email or password");
   }
 
   // ----------------- user found --------------------------
-  public void showUser(Map<String, String> user) {
+  public void showUser(Map<String, String> user, int numberOfQuestions) {
+    ConsoleUtil.clearConsole();
+    System.out.println(Banner.MAIN_BANNER);
+    System.out.println(Banner.TRAINEE_INFO);
     System.out.println("\n--------------------------------------------------------------");
+    System.out.println("Trainee ID: " + user.get("id"));
     System.out.println("First Name: " + user.get("firstname"));
     System.out.println("Last Name: " + user.get("lastname"));
     System.out.println("Email: " + user.get("email"));
     System.out.println("Username: " + user.get("username"));
-    System.out.println("Score: " + user.get("quizScore"));
-    System.out.println("Quiz Date Taken: " + user.get("quizDate"));
+    String score = (user.get("quizScore").equals("-1")) ? "N/A" : user.get("quizScore") + "/" + numberOfQuestions;
+    System.out.println("Score: " + score);
+    String quizDate = (user.get("quizDate") == null) ? "N/A" : user.get("quizDate");
+    System.out.println("Quiz Date Taken: " + quizDate);
+    System.out.println("Date Account Registered: " + user.get("createdAt"));
+    System.out.println("Date Account Updated : " + user.get("updatedAt"));
     System.out.println("--------------------------------------------------------------");
+
+    pressToContinue();
+    sc.nextLine();
   }
 
   // ----------- helper methods ----------------
@@ -194,9 +214,20 @@ public class AppView {
   }
 
   private int getIntInput(String prompt) {
-    System.out.print("\n" + prompt + "\n> ");
-    int input = sc.nextInt();
-    sc.nextLine();
+    int input = -1;
+    boolean validInput = false;
+
+    while (!validInput) {
+      System.out.print("\n" + prompt + "\n> ");
+      if (sc.hasNextInt()) {
+        input = sc.nextInt();
+        sc.nextLine();
+        validInput = true;
+      } else {
+        showError("Invalid input. Please enter a whole number.");
+        sc.nextLine();
+      }
+    }
 
     return input;
   }
@@ -208,17 +239,16 @@ public class AppView {
 
   // ----------------------- Success and Fail message ------------------------
   public void showError(String errorMessage) {
-    System.out.println("\n⚠️" + errorMessage);
+    System.out.println("\n⚠️ " + errorMessage);
     pressToContinue();
   }
 
   public void showSuccess(String successMessage) {
-    System.out.println("\n🎉" + successMessage);
+    System.out.println("\n🎉 " + successMessage);
     pressToContinue();
   }
 
-  public char showTryAgain(String s) {
-    System.out.println(s);
-    return sc.next().charAt(0);
+  public void showMessage(String message) {
+    System.out.println("\n" + message);
   }
 }
