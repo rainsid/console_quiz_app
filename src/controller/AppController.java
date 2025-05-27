@@ -18,6 +18,7 @@ public class AppController {
   private UserController userController;
   private QuizController quizController;
   private DatabaseManager dbManager;
+  private Scanner consumeLine = new Scanner(System.in);
 
   public AppController(AppView view, QuizController quizController, UserController userController,
       DatabaseManager dbManager) {
@@ -59,7 +60,7 @@ public class AppController {
     }
     String storedPassword = dbManager.getAdminPassword(username);
 
-    if (storedPassword != null && password.equals(storedPassword)) {
+    if (password.equals(storedPassword)) {
 
       view.showSuccess("Admin login successful");
       adminMenu();
@@ -144,11 +145,14 @@ public class AppController {
     }
     Map<String, String> user = dbManager.findUser(identifier, identifierType);
     if (user == null) {
-      view.showNoUserFound();
+      view.showError("Trainee not found");
+      consumeLine.nextLine();
       return null;
     }
 
-    view.showUser(user);
+    QuizModel quizModel = new QuizModel();
+    int numberOfQuestions = quizModel.retrieveAllQuestions().size();
+    view.showUser(user, numberOfQuestions);
     return user;
   }
 
@@ -171,9 +175,14 @@ public class AppController {
     Map<String, String> user = viewUser();
     boolean isDeleted = false;
 
-    if (user != null) {
-      if (view.showDeleteUser(user)) {
+    QuizModel quizModel = new QuizModel();
+    int numberOfQuestions = quizModel.retrieveAllQuestions().size();
+
+    if (user != null ) {
+      if (view.showDeleteUser(user, numberOfQuestions)) {
         isDeleted = dbManager.deleteUser(user.get("id"));
+      } else {
+        view.showMessage("Trainee deletion cancelled.");
       }
       if (isDeleted) {
         view.showSuccess("Success! User has been deleted!");
