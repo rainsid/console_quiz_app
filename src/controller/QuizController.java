@@ -1,14 +1,15 @@
 package controller;
 
+import java.util.Scanner;
+
 import Entities.Question;
 import model.QuizModel;
 import view.QuizAdminView;
 
 import java.util.ArrayList;
 
-import javax.sound.sampled.SourceDataLine;
-
 public class QuizController {
+  private Scanner sc = new Scanner(System.in);
   private QuizModel quizModel = new QuizModel();
   private QuizAdminView quizAdminView = new QuizAdminView();
   private Question question = new Question();
@@ -46,9 +47,11 @@ public class QuizController {
     question.setCorrectAnswer(correctAnswer);
 
     if (quizModel.addQuestion(question) > 0) {
-      quizAdminView.showMessage("Question successfully added!");
+      quizAdminView.showSuccess("Question successfully added!");
+      sc.nextLine();
     } else {
-      quizAdminView.showMessage("Adding question failed");
+      quizAdminView.showError("Adding question failed");
+      sc.nextLine();
     }
   }
 
@@ -64,26 +67,35 @@ public class QuizController {
     int id = quizAdminView.showSearchQuestion();
     Question question = quizModel.searchQuestion(id);
     if (question == null) {
-      quizAdminView.showMessage("No question found with ID " + id);
+      quizAdminView.showError("No question found with ID " + id);
+      sc.nextLine();
     } else {
       quizAdminView.showQuestion(question);
+      Question q = quizAdminView.showUpdateQuestion(question);
+      if (quizModel.updateQuestion(q)) {
+        quizAdminView.showSuccess("Question successfully updated!");
+      } else {
+        quizAdminView.showError("Question update failed");
+      }
     }
   }
 
   // ----------------- delete a question --------------------
   public void deleteQuestion() {
-    System.out.println("Delete a Question");
     int idToDelete = quizAdminView.showSearchQuestion();
     Question q = quizModel.searchQuestion(idToDelete);
     if (q == null) {
-      quizAdminView.showMessage("No question with that ");
+      quizAdminView.showError("No question found with ID " + idToDelete);
+      sc.nextLine();
       return;
     }
     if (quizAdminView.showDeleteQuestion(q)) {
       if (quizModel.deleteQuestion(idToDelete)) {
-        System.out.println("Deleted");
+        quizAdminView.showSuccess("Question deleted");
+        sc.nextLine();
       } else {
-        System.out.println("deletion failed");
+        quizAdminView.showError("Question deletion failed");
+        sc.nextLine();
       }
     }
   }
