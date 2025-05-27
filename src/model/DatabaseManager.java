@@ -81,6 +81,7 @@ public class DatabaseManager {
 
       while (res.next()) {
         Map<String, String> user = new HashMap<>();
+        user.put("id", res.getString("id"));
         user.put("firstname", res.getString("firstname"));
         user.put("lastname", res.getString("lastname"));
         user.put("email", res.getString("email"));
@@ -128,6 +129,8 @@ public class DatabaseManager {
       user.put("quizScore", res.getString("quizScore"));
       user.put("quizDate", res.getString("quizDate"));
       user.put("password", res.getString("password"));
+      user.put("createdAt", res.getString("createdAt"));
+      user.put("updatedAt", res.getString("updatedAt"));
       return user;
     } catch (SQLException e) {
       System.out.println("Database initialization error: " + e.getMessage());
@@ -162,6 +165,7 @@ public class DatabaseManager {
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
 
+      String oldUsername = user.get("oldUsername");
       String firstname = user.get("firstname");
       String lastname = user.get("lastname");
       String email = user.get("email");
@@ -169,7 +173,8 @@ public class DatabaseManager {
       String password = user.get("password");
 
       String sql = "UPDATE users SET firstname = '" + firstname + "', lastname = '" + lastname + "', email = '" + email
-          + "', username = '" + username + "', password = '" + password + "' where username = '" + username + "';";
+          + "', username = '" + username + "', password = '" + password + "' where username = '" + oldUsername + "';";
+
       int rowsAffected = stmt.executeUpdate(sql);
       if (rowsAffected > 0)
         return true;
@@ -180,8 +185,7 @@ public class DatabaseManager {
     return false;
   }
 
-  // ------------------------------ delete user
-  // --------------------------------------
+  // ------------------------------ delete user --------------------------------------
   public boolean deleteUser(String id) {
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
