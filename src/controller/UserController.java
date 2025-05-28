@@ -32,6 +32,10 @@ public class UserController {
       return;
     }
     ArrayList<String> idAndPassword = dbManager.getUserPassword(username);
+    if (idAndPassword == null) {
+      userView.showError("Username does not exist");
+      return;
+    }
     if (password.equals(idAndPassword.get(1))) {
       userView.showSuccess("User login successful");
       userMenu(idAndPassword.get(0));
@@ -43,7 +47,8 @@ public class UserController {
   private void userMenu(String id) {
     while (true) {
       int choice = userView.showUserMenu();
-      if(choice == 3) break;
+      if (choice == 3)
+        break;
       switch (choice) {
         case 1:
           takeQuiz(id);
@@ -72,10 +77,12 @@ public class UserController {
       userAnswersString.append(entry.getValue()).append(",");
       counter++;
     }
-    if(dbManager.saveQuizData(id, quizScore, String.valueOf(userAnswersString), numberOfItems)) {
-      userView.showMessage("Your score: " + quizScore + "/" + numberOfItems);
-      userView.showMessage(String.valueOf(userAnswersString));
-    }else{
+    if (userAnswersString.length() > 0) {
+      userAnswersString.deleteCharAt(userAnswersString.length() - 1);
+    }
+    if (dbManager.saveQuizData(id, quizScore, String.valueOf(userAnswersString), numberOfItems)) {
+      userView.showResult();
+    } else {
       userView.showError("Quiz data not saved!");
     }
   }
