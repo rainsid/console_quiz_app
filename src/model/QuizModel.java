@@ -7,9 +7,8 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class QuizModel {
-  private static final String DB_URL = "jdbc:sqlite:database";
+  private static final String DB_URL = "jdbc:sqlite:quiz_app.db";
   private static final String QUESTIONS_TABLE = "questions";
-  private static final int NUMBER_OF_OPTIONS = 4;
   private Question question = new Question();
 
   public QuizModel() {
@@ -50,8 +49,7 @@ public class QuizModel {
           + question_text + "','" + option_a + "','" + option_b + "','" + option_c + "','" + option_d + "','"
           + correctAnswer + "');";
 
-      int rowsAffected = stmt.executeUpdate(sql);
-      return rowsAffected;
+      return stmt.executeUpdate(sql);
     } catch (SQLException e) {
       System.out.println("error: " + e.getMessage());
     }
@@ -136,7 +134,7 @@ public class QuizModel {
     return true;
   }
 
-  //--------------------- update Question (refactored) ------------------
+  // --------------------- update Question (refactored) ------------------
   public boolean updateQuestion(Question q) {
     String sql = "UPDATE questions SET question_text = ?, option_a = ?, option_b = ?, option_c = ?, option_d = ?, correct_answer = ? WHERE question_id = ?";
 
@@ -150,8 +148,8 @@ public class QuizModel {
       pstmt.setString(6, q.getCorrectAnswer());
       pstmt.setString(7, Integer.toString(q.getQuestionID()));
 
-      int rowsAffected = pstmt.executeUpdate(sql);
-      return(rowsAffected > 0);
+      int rowsAffected = pstmt.executeUpdate();
+      return (rowsAffected > 0);
 
     } catch (SQLException e) {
       System.out.println("error: " + e.getMessage());
@@ -159,14 +157,3 @@ public class QuizModel {
     }
   }
 }
-
-/*
- * "question_id INTEGER PRIMARY KEY AUTOINCREMENT," +
- * "question_text TEXT NOT NULL," +
- * "option_a TEXT NOT NULL," +
- * "option_b TEXT NOT NULL," +
- * "option_c TEXT NOT NULL," +
- * "option_d TEXT NOT NULL," +
- * "correct_answer TEXT NOT NULL" +
- * ")";
- */
