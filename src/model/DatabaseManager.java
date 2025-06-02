@@ -14,7 +14,7 @@ public class DatabaseManager {
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
 
-      String sql = "CREATE TABLE IF NOT EXISTS users  (" +
+      String sql = "CREATE TABLE IF NOT EXISTS trainees (" +
           "    id INTEGER PRIMARY KEY AUTOINCREMENT," +
           "    firstname TEXT NOT NULL," +
           "    lastname TEXT NOT NULL," +
@@ -46,7 +46,7 @@ public class DatabaseManager {
           "total_questions INTEGER NOT NULL, " +
           "attempt_date TEXT DEFAULT (datetime('now', 'localtime'))," +
           "answers_concatenated TEXT NOT NULL," +
-          "FOREIGN KEY (user_id) REFERENCES users(id));";
+          "FOREIGN KEY (user_id) REFERENCES trainees(id));";
       stmt.execute(sql); // Execute the quiz_attempts table creation SQL
 
     } catch (SQLException e) {
@@ -76,7 +76,7 @@ public class DatabaseManager {
     List<Map<String, String>> users = new ArrayList<>();
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
-      String sql = "SELECT * from users;";
+      String sql = "SELECT * from trainees;";
       ResultSet res = stmt.executeQuery(sql);
 
       while (res.next()) {
@@ -102,7 +102,7 @@ public class DatabaseManager {
     Map<String, String> user = new HashMap<>();
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
-      String sql = "SELECT * from users where ";
+      String sql = "SELECT * from trainees where ";
       switch (identifierType.toLowerCase()) {
         case "id":
           sql = sql + "id = '" + identifier + "';";
@@ -148,7 +148,7 @@ public class DatabaseManager {
       String username = user.get("username");
       String password = user.get("password");
 
-      String sql = "INSERT INTO users(firstname, lastname, email, username, password) values('" + firstname + "','"
+      String sql = "INSERT INTO trainees(firstname, lastname, email, username, password) values('" + firstname + "','"
           + lastname + "','" + email + "','" + username + "','" + password + "');";
 
       int rowsAffected = stmt.executeUpdate(sql);
@@ -172,8 +172,10 @@ public class DatabaseManager {
       String username = user.get("username");
       String password = user.get("password");
 
-      String sql = "UPDATE users SET firstname = '" + firstname + "', lastname = '" + lastname + "', email = '" + email
-          + "', username = '" + username + "', password = '" + password + "' where username = '" + oldUsername + "';";
+      String sql = "UPDATE trainees SET firstname = '" + firstname + "', lastname = '" + lastname + "', email = '"
+          + email
+          + "', username = '" + username + "', password = '" + password
+          + "', updatedAt = datetime('now', 'localtime')  " + " where username = '" + oldUsername + "';";
 
       int rowsAffected = stmt.executeUpdate(sql);
       if (rowsAffected > 0)
@@ -185,11 +187,12 @@ public class DatabaseManager {
     return false;
   }
 
-  // ------------------------------ delete user --------------------------------------
+  // ------------------------------ delete user
+  // --------------------------------------
   public boolean deleteUser(String id) {
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
-      String sql = "DELETE FROM users where id = '" + id + "';";
+      String sql = "DELETE FROM trainees where id = '" + id + "';";
       int rowsAffected = stmt.executeUpdate(sql);
 
     } catch (SQLException e) {
@@ -204,7 +207,7 @@ public class DatabaseManager {
   public ArrayList<String> getUserPassword(String user) {
     try (Connection conn = DriverManager.getConnection(DB_URL);
         Statement stmt = conn.createStatement()) {
-      String sql = "SELECT * from users where username = '" + user + "';";
+      String sql = "SELECT * from trainees where username = '" + user + "';";
       ArrayList<String> idAndPassword = new ArrayList<>();
       ResultSet res = stmt.executeQuery(sql);
       if (res.next()) {
@@ -221,7 +224,7 @@ public class DatabaseManager {
   }
 
   public boolean saveQuizData(String id, int quizScore, String userAnswers, int numberOfItems) {
-    String sql = "UPDATE users SET quizScore = ?, quizDate = datetime('now', 'localtime') WHERE id = ?;";
+    String sql = "UPDATE trainees SET quizScore = ?, quizDate = datetime('now', 'localtime') WHERE id = ?;";
     try (Connection conn = DriverManager.getConnection(DB_URL);
         PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, quizScore);
@@ -236,10 +239,41 @@ public class DatabaseManager {
     return false;
   }
 
+  public ArrayList<Map<String, String>> getQuizAttempts(String id) {
+    String sql = "SELECT * FROM quiz_attempts where user_id = ?";
+    ArrayList<Map<String, String>> quiz_attempts = new ArrayList<>();
+
+    ResultSet res = null;
+
+    try (Connection conn = DriverManager.getConnection(DB_URL);
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setInt(1, Integer.parseInt(id));
+
+      res = pstmt.executeQuery();
+
+      while (res.next()) {
+        Map<String, String> attempt = new HashMap<>();
+        attempt.put("attempt_id", res.getString("attempt_id"));
+        attempt.put("user_id", res.getString("user_id"));
+        attempt.put("score", res.getString("score"));
+        attempt.put("total_questions", res.getString("total_questions"));
+        attempt.put("attempt_date", res.getString("attempt_date"));
+        attempt.put("answers_concatenated", res.getString("answers_concatenated"));
+
+        quiz_attempts.add(attempt);
+      }
+
+    } catch (SQLException e) {
+      System.out.println("Database initialization error: " + e.getMessage());
+    }
+
+    return quiz_attempts;
+  }
+
   private boolean saveQuizAttempt(String id, int quizScore, String userAnswers, int totalQuestions) {
     String sql = "INSERT INTO quiz_attempts (user_id, score, total_questions, answers_concatenated) VALUES (?, ?, ?, ?)";
     try (Connection conn = DriverManager.getConnection(DB_URL);
-         PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setInt(1, Integer.parseInt(id));
       pstmt.setInt(2, quizScore);
       pstmt.setInt(3, totalQuestions);
@@ -252,4 +286,5 @@ public class DatabaseManager {
     }
     return false;
   }
+
 }
